@@ -142,14 +142,25 @@ function mostProlificAuthor(authors) {
  * BONUS: REMOVE DUPLICATE BOOKS
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
-  let author =getBookById(bookId,books).authors;
-  console.log(getBookById(bookId,books).authors[0].name);
-  let Authorbooks =[];
-  for (let i=0 ;i<author.length;i++){
-    Authorbooks.push(titlesByAuthorName(author[i].name,authors,books));
-  }
+  // let author =getBookById(bookId,books).authors;
+  // // console.log(getBookById(bookId,books).authors[0].name);
+  // let Authorbooks =[];
+  // for (let i=0 ;i<author.length;i++){
+  //   Authorbooks.push(titlesByAuthorName(author[i].name,authors,books));
+  // }
 
-  return Authorbooks;
+  // return Authorbooks;
+
+  const book = getBookById(bookId, books);
+  let titles = [];
+  book.authors.forEach(
+    author =>
+      (titles = titles.concat(titlesByAuthorName(author.name, authors, books)))
+    /* BONUS */
+    // titles = titles.concat(titlesByAuthorName(author.name, authors, books).filter(book => !titles.includes(book)))
+  );
+  // titles.filter(tit => !titles.includes(tit));
+  return titles;
 }
 
 /**************************************************************
@@ -160,6 +171,27 @@ function relatedBooks(bookId, authors, books) {
  ****************************************************************/
 function friendliestAuthor(authors) {
   // Your code goes here
+  authors.forEach(author => {
+    author.coauthoringCount = 0;
+    authors.forEach(secondAuthor => {
+      if (secondAuthor.name !== author.name) {
+        const sharedBooks = secondAuthor.books.filter(bookId =>
+          author.books.includes(bookId)
+        );
+        author.coauthoringCount += sharedBooks.length;
+      }
+    });
+  });
+
+  let friendlyAuthor = authors[0];
+
+  authors.forEach(author => {
+    if (author.coauthoringCount > friendlyAuthor.coauthoringCount) {
+      friendlyAuthor = author;
+    }
+  });
+
+  return friendlyAuthor.name;
 }
 
 module.exports = {
